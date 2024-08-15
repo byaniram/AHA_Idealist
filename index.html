@@ -15,23 +15,48 @@
 
     <div id="response"></div>
 
-    <script>
-        document.getElementById('apiForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
+ 
 
-            const userInput = document.getElementById('email').value;
-            const url = `https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/GetIdeasByOrganization_Exec.csv?param=${encodeURIComponent(userInput)}`;
-            const bearerToken = 'ZuNJBSjoyCAc7SDBJI11zbLGHwFC2mMV'; // Replace with your actual bearer token
+<script>
+    document.getElementById('apiForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
 
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${bearerToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-    
+        const userInput = document.getElementById('email').value;
+        const url = `https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/GetIdeasByOrganization_Exec.csv?param=${encodeURIComponent(userInput)}`;
+        const bearerToken = 'ZuNJBSjoyCAc7SDBJI11zbLGHwFC2mMV'; // Replace with your actual bearer token
+
+        // Print the URL to the console
+        console.log('Fetching URL:', url);
+
+        // Create a temporary anchor element
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = 'report.csv'; // Specify the default name for the downloaded file
+
+        // Set up the request headers
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${bearerToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.blob())  // Get the response as a blob
+        .then(blob => {
+            // Create a URL for the blob
+            const blobUrl = URL.createObjectURL(blob);
+            anchor.href = blobUrl;
+            anchor.click(); // Programmatically click the anchor to trigger the download
+
+            // Revoke the object URL to free up memory
+            URL.revokeObjectURL(blobUrl);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);  // Log any errors
         });
-    </script>
+    });
+</script>
+
+ 
 </body>
 </html>
