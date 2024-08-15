@@ -11,7 +11,7 @@ Repository for assets related to AHA ideas
 <body>
     <h1>API Call with Bearer Token</h1>
     <form id="apiForm">
-        <label for="userInput">Enter your org email address:</label>
+        <label for="email">Enter your org email address:</label>
         <input type="text" id="email" name="email" required>
         <button type="submit">Submit</button>
     </form>
@@ -22,7 +22,7 @@ Repository for assets related to AHA ideas
         document.getElementById('apiForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent the form from submitting the traditional way
 
-            const userInput = document.getElementById('userInput').value;
+            const userInput = document.getElementById('email').value;
             const url = `https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/GetIdeasByOrganization_Exec.csv?param=${encodeURIComponent(userInput)}`;
             const bearerToken = 'ZuNJBSjoyCAc7SDBJI11zbLGHwFC2mMV'; // Replace with your actual bearer token
 
@@ -33,6 +33,19 @@ Repository for assets related to AHA ideas
                     'Content-Type': 'application/json'
                 }
             })
-     </script>
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text(); // Assuming the response is CSV
+            })
+            .then(data => {
+                document.getElementById('response').innerText = data;
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = `Error: ${error.message}`;
+            });
+        });
+    </script>
 </body>
 </html>
