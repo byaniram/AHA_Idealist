@@ -35,12 +35,6 @@
                     throw new Error('Network response was not ok');
                 }
                 return response.text(); // Assuming the response is CSV
-            })
-            .then(data => {
-                document.getElementById('response').innerText = data;
-            })
-            .catch(error => {
-                document.getElementById('response').innerText = `Error: ${error.message}`;
             });
         });
     </script>
