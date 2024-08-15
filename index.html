@@ -22,11 +22,12 @@
         event.preventDefault(); // Prevent the form from submitting the traditional way
 
         const userInput = document.getElementById('email').value;
-        const url = `https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/GetIdeasByOrganization_Exec.csv?param=${encodeURIComponent(userInput)}`;
+        const url = `https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/GetIdeasByOrganization_Exec.csv?Org_email=${encodeURIComponent(userInput)}`;
         const bearerToken = 'ZuNJBSjoyCAc7SDBJI11zbLGHwFC2mMV'; // Replace with your actual bearer token
 
         // Print the URL to the console
-        console.log('Fetching URL:', url);
+           <h2>API Call with Bearer Token, url</h2>
+
 
         // Create a temporary anchor element
         const anchor = document.createElement('a');
