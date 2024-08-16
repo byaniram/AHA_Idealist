@@ -19,12 +19,11 @@
                     headers: {
                         'Authorization': `Bearer ${token}`,
                 'Accept': '*/*', // Add Accept header
-                'Connection': 'keep-alive' // Add Connection header
+                'Connection': 'keep-alive', // Add Connection header
+                         },
                         redirect: 'follow' // Ensure redirects are followed
-
-                    }
                 });
-
+                
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
