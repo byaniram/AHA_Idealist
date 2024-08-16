@@ -17,6 +17,8 @@
     function sendRequest() {
       const inputValue = document.getElementById('userInput').value;
       const url = `${apiUrl}?Org_email=${inputValue}`; // Construct the URL with the parameter
+    console.log('Reached 1');
+
 
       fetch(url, {
         headers: {
