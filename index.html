@@ -1,4 +1,57 @@
 <!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Input to URL</title>
+</head>
+<body>
+  <h1>Enter String Input:</h1>
+  <input type="text" id="Organization email address:" placeholder="rb">
+  <button onclick="sendRequest()">Submit</button>
+
+  <div id="response"></div>
+
+  <script>
+    const apiUrl = 'https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/GetIdeasByOrganization_Exec.csv'; // Replace with your actual API URL
+    const bearerToken = 'ZuNJBSjoyCAc7SDBJI11zbLGHwFC2mMV'; // Replace with your actual bearer token
+
+    function sendRequest() {
+      const inputValue = document.getElementById('userInput').value;
+      const url = `${apiUrl}?Org_email=${inputValue}`; // Construct the URL with the parameter
+
+      fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${bearerToken}`
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const contentType = response.headers.get('content-type');
+        if (contentType.includes('text/csv')) {
+          // Handle CSV response
+          const downloadLink = document.createElement('a');
+          downloadLink.href = response.url;
+          downloadLink.download = 'data.csv';
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+        } else {
+          // Handle string response
+          response.text().then(text => {
+            document.getElementById('response').textContent = text;
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('response').textContent = 'An error occurred. Please try again later.';
+      });
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
