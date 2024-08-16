@@ -22,7 +22,7 @@
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${bearerToken}`,
-                    'Accept': 'text/csv, application/json' // Accept both CSV and JSON 
+                    'Accept': 'text/csv, application/json', 'application/octet-stream' // Accept both CSV and JSON 
                 }
             })
             .then(response => {
@@ -38,7 +38,7 @@
                 console.log('Content type:', contentType);
 
                 // Handle response based on content type
-                if (contentType.startsWith('text/csv')) {
+                if (contentType.startsWith('application/octet-stream')) {
                     // Download the CSV file
                     const url = window.URL.createObjectURL(data);
                     const link = document.createElement('a');
