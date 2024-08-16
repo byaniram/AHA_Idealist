@@ -8,7 +8,7 @@
         async function fetchData() {
             const input = document.getElementById("userInput").value;
             const token = "QbdNZoeh8H7NV0khklwo5VEkgey72GYP";  // Replace with your actual Bearer Token
-            const url = `https://cdn.uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/AHA_Parent_Task.csv?Org_email=${encodeURIComponent(input)}`;  // Replace with your actual URL
+            const url = `https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/AHA_Parent_Task.csv?Org_email=${encodeURIComponent(input)}`;  // Replace with your actual URL
 
             // Update the progress message
             document.getElementById("progress").innerText = "Sending request...";
