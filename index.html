@@ -23,7 +23,9 @@
                          },
                         redirect: 'follow' // Ensure redirects are followed
                 });
-                
+
+                            document.getElementById("progress").innerText = "fetch done request...";
+
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
