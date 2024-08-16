@@ -1,77 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Pages Input Example</title>
-    <script>
-        // Replace with your actual API endpoint
-        const apiEndpoint = 'https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/AHA_Parent_Task.csv'; 
-        // Replace with your actual Bearer Token
-        const bearerToken = 'QbdNZoeh8H7NV0khklwo5VEkgey72GYP';
+  <title>CSV Downloader</title>
+  <script>
+    function downloadCSV() {
+      const inputString = document.getElementById('inputString').value;
+      const apiUrl = 'https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/AHA_Parent_Task.csv?Org_email=' + encodeURIComponent(inputString); // Replace with your actual API endpoint
+      const authToken = 'QbdNZoeh8H7NV0khklwo5VEkgey72GYP'; // Replace with your actual Bearer Token
 
-        function submitInput() {
-            const inputValue = document.getElementById('userInput').value;
-            console.log('User input:', inputValue);
+      // Display loading message
+      document.getElementById('status').textContent = 'Loading...';
 
-            // Construct the full URL with the input parameter
-            const fullUrl = `${apiEndpoint}?User_email=${inputValue}`;
-            console.log('Full URL:', fullUrl);
-
-            fetch(fullUrl, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${bearerToken}`,
-                    'Accept': 'text/csv, application/json', 'application/octet-stream' // Accept both CSV and JSON 
-                }
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.blob(); // Get the response as a blob
-            })
-            .then(data => {
-                console.log('Data received:', data);
-                const contentType = data.type;
-                console.log('Content type:', contentType);
-
-                // Handle response based on content type
-                if (contentType.startsWith('application/octet-stream')) {
-                    // Download the CSV file
-                    const url = window.URL.createObjectURL(data);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'data.csv';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else if (contentType.startsWith('application/json')) {
-                    // Parse JSON response
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        console.log('JSON response:', JSON.parse(e.target.result));
-                        // Display the JSON response as you wish (e.g., in a div)
-                        document.getElementById('responseArea').textContent = JSON.stringify(JSON.parse(e.target.result), null, 2); // Pretty-printed
-                    };
-                    reader.readAsText(data);
-                } else {
-                    console.error('Unknown content type:', contentType);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                document.getElementById('responseArea').textContent = 'Error fetching data';
-            });
+      fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + authToken
         }
-    </script>
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        // Create a temporary URL for the blob
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a link element and click it to trigger download
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'data.csv'); // Set the download filename
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        // Display success message
+        document.getElementById('status').textContent = 'Download complete!';
+      })
+      .catch(error => {
+        // Display error message
+        document.getElementById('status').textContent = 'Error: ' + error.message;
+      });
+    }
+  </script>
 </head>
 <body>
-    <h1>Enter your org email</h1>
-    <input type="text" id="userInput" placeholder="Enter your string input">
-    <button onclick="submitInput()">Submit</button>
-
-    <div id="responseArea"></div>
+  <h1>CSV Downloader</h1>
+  <p>Enter your string:</p>
+  <input type="text" id="inputString">
+  <button onclick="downloadCSV()">Download CSV</button>
+  <p id="status"></p>
 </body>
 </html>
