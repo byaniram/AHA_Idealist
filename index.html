@@ -1,62 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV File Downloader</title>
-    <script>
-        async function fetchData() {
-            const input = document.getElementById("userInput").value;
-            const token = "QbdNZoeh8H7NV0khklwo5VEkgey72GYP";  // Replace with your actual Bearer Token
-            const url = `https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/AHA_Parent_Task.csv?Org_email=${encodeURIComponent(input)}`;  // Replace with your actual URL
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV File Downloader</title>
+  <script>
+    async function fetchData() {
+      const input = document.getElementById("userInput").value;
+      const token = "QbdNZoeh8H7NV0khklwo5VEkgey72GYP"; // Replace with your actual Bearer Token
+      const url = `https://uat.elastic.snaplogic.com/api/1/rest/slsched/feed/QA/RB_Temp_Space/AHA_Report_Final_/AHA_Parent_Task.csv?Org_email=${encodeURIComponent(input)}`; // Replace with your actual URL
 
-            // Update the progress message
-            document.getElementById("progress").innerText = "Sending request...";
+      // Validate Email
+      if (!validateEmail(input)) {
+        document.getElementById("progress").innerText = "Invalid email address. Please try again.";
+        return; // Stop execution if email is invalid
+      }
 
-            try {
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                'Accept': '*/*', // Add Accept header
-                'Content-Type': 'application/json',
-//                 'Access-Control-Allow-Origin': '*.github.*',
-                'Connection': 'keep-alive', // Add Connection header
-                         },
-                        redirect: 'follow' // Ensure redirects are followed
-                });
+      // Update the progress message
+      document.getElementById("progress").innerText = "Sending request...";
 
-                            document.getElementById("progress").innerText = "fetch done request...";
+      // Disable the submit button
+      document.querySelector('button').disabled = true; 
 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive', // Add Connection header
+          },
+          redirect: 'follow' // Ensure redirects are followed
+        });
 
-                document.getElementById("progress").innerText = "Downloading file...";
+        document.getElementById("progress").innerText = "Fetch done...";
 
-                const blob = await response.blob();
-
-                // Create a link to download the CSV file
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = downloadUrl;
-                a.download = "data.csv";  // The filename for the downloaded CSV file
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(downloadUrl);
-
-                document.getElementById("progress").innerText = "Download complete.";
-            } catch (error) {
-                document.getElementById("progress").innerText = `Error: ${error.message}`;
-            }
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
-    </script>
+
+        document.getElementById("progress").innerText = "Downloading file...";
+
+        const blob = await response.blob();
+
+        // Create a link to download the CSV file
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = "data.csv"; // The filename for the downloaded CSV file
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(downloadUrl);
+
+        document.getElementById("progress").innerText = "Download complete.";
+      } catch (error) {
+        document.getElementById("progress").innerText = `Error: ${error.message}`;
+      } finally {
+        // Re-enable the submit button after the request is completed (success or error)
+        document.querySelector('button').disabled = false; 
+      }
+    }
+
+    // Email validation function
+    function validateEmail(email) {
+      // Regular expression for email validation
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+  </script>
 </head>
 <body>
-    <h1>Aha Idea Report for Apex accounts</h1>
-    <p>Enter your organization email address:</p>
-    <input type="text" id="userInput" placeholder="Enter input">
-    <button onclick="fetchData()">Submit</button>
-    <p id="progress"></p>
+  <h1>Aha Idea Report for Apex accounts</h1>
+  <h2>This application returns a downloadable csv file with the list of ideas for an organization.</h2>
+
+  <p>Enter your organization email address:</p>
+  <input type="text" id="userInput" placeholder="Enter input">
+  <button onclick="fetchData()">Submit</button>
+  <p id="progress"></p>
 </body>
 </html>
