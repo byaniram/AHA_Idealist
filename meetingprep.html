@@ -1,112 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Meeting Prep Planner Agent</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        #message {
-            font-size: 12px;
-            color: red;
-        }
-        #outMessage {
-            font-size: 12px;
-        }
-    </style>
-    <script>
-        function validateTaskId() {
-            var taskId = document.getElementById("taskId").value;
-            var submitButton = document.getElementById("submitButton");
-            var messageDiv = document.getElementById("message");
-
-            if (taskId.length !== 18) {
-                messageDiv.textContent = "Task Id must be 18 characters";
-                submitButton.disabled = true;
-                document.getElementById("taskId").focus();
-                return false;
-            } else {
-                messageDiv.textContent = ""; // Clear the message if valid
-                submitButton.disabled = false; // Enable the submit button
-                return true;
-            }
-        }
-
-
-        async function submitForm() {
-            if (!validateTaskId()) {
-                return;
-            }
-
-            var taskId = document.getElementById("taskId").value;
-            var outMessageDiv = document.getElementById("outMessage");
-            var processingMessageDiv = document.getElementById("processingMessage");
-            var submitButton = document.getElementById("submitButton");
-            submitButton.disabled = true; // Disable after click
-            processingMessageDiv.textContent = "Processing... Please be patient!";
-            outMessageDiv.textContent = "";  //clear the previous message
-            
-
-            const apiUrl = `https://elastic.snaplogic.com/api/1/rest/slsched/feed/SLoS_Dev/projects/RB_Agent_Creator_IPA2/MP_Task_Outreach_1_API?TaskId=${taskId}`;
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer nWpSsOLoXbTJYHQwsLllP1FVA4FoiuW9',
-                        'Content-Type': 'application/json' // Optional, but good practice
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                if (Array.isArray(data) && data.length > 0) {
-                    outMessageDiv.textContent = data[0].OutMessage;
-                } else {
-                    outMessageDiv.textContent = "No data received or invalid response format.";
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                outMessageDiv.textContent = "An error occurred: " + error.message;
-            } finally {
-                processingMessageDiv.textContent = "Processing Complete";
-                //submitButton.disabled = false;  // Leave it disabled until the form is cleared, as specified
-            }
-        }
-
-        function clearForm() {
-            document.getElementById("taskId").value = "";
-            document.getElementById("outMessage").textContent = "";
-            document.getElementById("message").textContent = "";
-            document.getElementById("processingMessage").textContent = "";
-            document.getElementById("submitButton").disabled = true; // Disable the submit button
-            document.getElementById("taskId").focus();
-
-        }
-    </script>
+<title>Meeting Prep Planner Agent</title>
+<style>
+  body {
+    font-family: sans-serif;
+  }
+  .center {
+    text-align: center;
+  }
+  #task_id_field{
+    width: 200px;
+  }
+</style>
 </head>
 <body>
-    <h1 style="font-size: 16px; font-weight: bold;">Meeting Prep Planner Agent</h1>
 
-    <br><br>
+<h1 class="center" style="font-size: 16px; font-weight: bold;">Meeting Prep Planner Agent</h1>
 
-    <label style="font-size: 12px;">Enter Task Id</label><br>
-    <input type="text" id="taskId" name="taskId" maxlength="18" size="20" oninput="validateTaskId()"><br>
-    <div id="message"></div>
-    <br>
-    <button id="submitButton" onclick="submitForm()" disabled>Submit</button>
+<br><br>
 
-    <br><br>
-    <div id="processingMessage" style="font-size: 12px;"></div>
-    <div id="outMessage" style="font-size: 12px;"></div>
+<div class="center">
+  <label for="taskId" style="font-size: 12px;">Enter Task Id:</label>
+  <input type="text" id="taskId" name="taskId" maxlength="18">
+  <button id="submitBtn" disabled>Submit</button>
+</div>
 
+<div class="center" id="errorMsg" style="color: red; font-size: 12px;"></div>
 
-    <br>
-    <button onclick="clearForm()">Clear Form</button>
+<div class="center" id="processingMsg" style="font-size: 12px; display: none;">Processing...</div>
+<div class="center" id="processingCompleteMsg" style="font-size: 12px; display: none; color: green;">Processing Complete</div>
+
+<div class="center" id="outputMessage" style="font-size: 12px;"></div>
+
+<br>
+
+<div class="center">
+  <button id="clearBtn">Clear Form</button>
+</div>
+
+<script>
+  const taskIdInput = document.getElementById("taskId");
+  const submitBtn = document.getElementById("submitBtn");
+  const errorMsg = document.getElementById("errorMsg");
+  const processingMsg = document.getElementById("processingMsg");
+  const processingCompleteMsg = document.getElementById("processingCompleteMsg");
+  const outputMessage = document.getElementById("outputMessage");
+  const clearBtn = document.getElementById("clearBtn");
+
+  const apiUrl = "https://elastic.snaplogic.com/api/1/rest/slsched/feed/SLoS_Dev/projects/RB_Agent_Creator_IPA2/MP_Task_Outreach_1_API";
+  const bearerToken = "nWpSsOLoXbTJYHQwsLllP1FVA4FoiuW9";
+
+  taskIdInput.addEventListener("input", function() {
+    if (taskIdInput.value.length === 18) {
+      submitBtn.disabled = false;
+      errorMsg.textContent = "";
+    } else {
+      submitBtn.disabled = true;
+      errorMsg.textContent = "";  // Clear the error message until a new invalid input comes
+    }
+  });
+
+  submitBtn.addEventListener("click", function() {
+    const taskId = taskIdInput.value;
+
+    if (taskId.length !== 18) {
+      errorMsg.textContent = "Task Id must be 18 characters";
+      taskIdInput.focus();
+      return;
+    }
+
+    errorMsg.textContent = "";
+    processingMsg.style.display = "block";
+    processingCompleteMsg.style.display = "none";
+    outputMessage.textContent = "";
+    submitBtn.disabled = true; // Disable the submit button after click
+
+    fetch(`${apiUrl}?TaskId=${taskId}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${bearerToken}`
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      processingMsg.style.display = "none";
+      processingCompleteMsg.style.display = "block";
+
+      if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty("OutMessage")) {
+        outputMessage.textContent = data[0].OutMessage;
+      } else {
+        outputMessage.textContent = "Error: Could not retrieve OutMessage from the response.";
+      }
+    })
+    .catch(error => {
+      processingMsg.style.display = "none";
+      processingCompleteMsg.style.display = "block";
+      outputMessage.textContent = "Error: " + error;
+    });
+  });
+
+  clearBtn.addEventListener("click", function() {
+    taskIdInput.value = "";
+    submitBtn.disabled = true;
+    errorMsg.textContent = "";
+    processingMsg.style.display = "none";
+    processingCompleteMsg.style.display = "none";
+    outputMessage.textContent = "";
+    taskIdInput.focus();
+  });
+</script>
 
 </body>
 </html>
