@@ -4,110 +4,109 @@
     <title>Meeting Prep Planner Agent</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: Arial, sans-serif;
         }
-        #task-id-input {
-            width: 200px; /* Adjust width as needed */
+        #message {
+            font-size: 12px;
+            color: red;
         }
-        #submit-button {
-            cursor: pointer;
-        }
-        #submit-button:disabled {
-            background-color: #cccccc;
-            color: #666666;
-            cursor: not-allowed;
+        #outMessage {
+            font-size: 12px;
         }
     </style>
-</head>
-<body>
-
-    <h1 style="font-size: 16px; font-weight: bold;">Meeting Prep Planner Agent</h1>
-    <br><br>
-
-    <label for="task-id-input" style="font-size: 12px;">Enter Task Id:</label>
-    <input type="text" id="task-id-input" maxlength="18">
-    <span id="error-message" style="color: red;"></span>
-    <br><br>
-
-    <button id="submit-button" disabled>Submit</button>
-    <br><br>
-
-    <div id="output-message"></div>
-
-    <button id="clear-button">Clear Form</button>
-
     <script>
-        const taskIdInput = document.getElementById('task-id-input');
-        const errorMessage = document.getElementById('error-message');
-        const submitButton = document.getElementById('submit-button');
-        const outputMessageDiv = document.getElementById('output-message');
-        const clearButton = document.getElementById('clear-button');
-        const apiUrl = "https://elastic.snaplogic.com/api/1/rest/slsched/feed/SLoS_Dev/projects/RB_Agent_Creator_IPA2/MP_Task_Outreach_1_API";
-        const bearerToken = "nWpSsOLoXbTJYHQwsLllP1FVA4FoiuW9";
+        function validateTaskId() {
+            var taskId = document.getElementById("taskId").value;
+            var submitButton = document.getElementById("submitButton");
+            var messageDiv = document.getElementById("message");
 
-        taskIdInput.addEventListener('input', function() {
-            if (this.value.length === 18) {
-                errorMessage.textContent = '';
-                submitButton.disabled = false;
-            } else {
-                errorMessage.textContent = 'Task Id must be 18 characters';
+            if (taskId.length !== 18) {
+                messageDiv.textContent = "Task Id must be 18 characters";
                 submitButton.disabled = true;
+                document.getElementById("taskId").focus();
+                return false;
+            } else {
+                messageDiv.textContent = ""; // Clear the message if valid
+                submitButton.disabled = false; // Enable the submit button
+                return true;
             }
-        });
+        }
 
-        submitButton.addEventListener('click', function() {
-            const taskId = taskIdInput.value;
 
-            if (taskId.length !== 18) { // Double check, just in case
-                errorMessage.textContent = 'Task Id must be 18 characters';
-                taskIdInput.focus();
+        async function submitForm() {
+            if (!validateTaskId()) {
                 return;
             }
 
-            submitButton.disabled = true;  // Disable after click.
+            var taskId = document.getElementById("taskId").value;
+            var outMessageDiv = document.getElementById("outMessage");
+            var processingMessageDiv = document.getElementById("processingMessage");
+            var submitButton = document.getElementById("submitButton");
+            submitButton.disabled = true; // Disable after click
+            processingMessageDiv.textContent = "Processing...";
+            outMessageDiv.textContent = "";  //clear the previous message
+            
 
-            fetch(`${apiUrl}?TaskId=${taskId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${bearerToken}`
-                }
-            })
-            .then(response => {
+            const apiUrl = `https://elastic.snaplogic.com/api/1/rest/slsched/feed/SLoS_Dev/projects/RB_Agent_Creator_IPA2/MP_Task_Outreach_1_API?TaskId=${taskId}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer nWpSsOLoXbTJYHQwsLllP1FVA4FoiuW9',
+                        'Content-Type': 'application/json' // Optional, but good practice
+                    }
+                });
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json();
-            })
-            .then(data => {
-                if (Array.isArray(data) && data.length > 0 && data[0].OutMessage) {
-                    outputMessageDiv.textContent = data[0].OutMessage;
+
+                const data = await response.json();
+
+                if (Array.isArray(data) && data.length > 0) {
+                    outMessageDiv.textContent = data[0].OutMessage;
                 } else {
-                    outputMessageDiv.textContent = "Unexpected response format.";
+                    outMessageDiv.textContent = "No data received or invalid response format.";
                 }
-            })
-            .catch(error => {
-                outputMessageDiv.textContent = "Error: " + error.message;
-            });
-        });
-
-        clearButton.addEventListener('click', function() {
-            taskIdInput.value = '';
-            errorMessage.textContent = '';
-            outputMessageDiv.textContent = '';
-            submitButton.disabled = true;
-            taskIdInput.focus();  // Return cursor to the input field
-        });
-
-
-        taskIdInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent form submission
-                if (!submitButton.disabled) {
-                    submitButton.click(); // Trigger the submit button's click event
-                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                outMessageDiv.textContent = "An error occurred: " + error.message;
+            } finally {
+                processingMessageDiv.textContent = "Processing Complete";
+                //submitButton.disabled = false;  // Leave it disabled until the form is cleared, as specified
             }
-        });
+        }
+
+        function clearForm() {
+            document.getElementById("taskId").value = "";
+            document.getElementById("outMessage").textContent = "";
+            document.getElementById("message").textContent = "";
+            document.getElementById("processingMessage").textContent = "";
+            document.getElementById("submitButton").disabled = true; // Disable the submit button
+            document.getElementById("taskId").focus();
+
+        }
     </script>
+</head>
+<body>
+    <h1 style="font-size: 16px; font-weight: bold;">Meeting Prep Planner Agent</h1>
+
+    <br><br>
+
+    <label style="font-size: 12px;">Enter Task Id</label><br>
+    <input type="text" id="taskId" name="taskId" maxlength="18" size="20" oninput="validateTaskId()"><br>
+    <div id="message"></div>
+    <br>
+    <button id="submitButton" onclick="submitForm()" disabled>Submit</button>
+
+    <br><br>
+    <div id="processingMessage" style="font-size: 12px;"></div>
+    <div id="outMessage" style="font-size: 12px;"></div>
+
+
+    <br>
+    <button onclick="clearForm()">Clear Form</button>
 
 </body>
 </html>
