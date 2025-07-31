@@ -77,14 +77,24 @@
     outputMessage.textContent = "";
     submitBtn.disabled = true; // Disable the submit button after click
 
+    let controller = new AbortController();
+    let signal = controller.signal;
+
+    // Set the timeout for 5 minutes (600000 milliseconds)
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, 600000);
+
+
     fetch(`${apiUrl}?TaskId=${taskId}`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${bearerToken}`
       },
-      signal: AbortSignal.timeout(600000) // 10 minutes timeout
+      signal: signal
     })
     .then(response => {
+      clearTimeout(timeoutId); // Clear the timeout if the request completes successfully
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -109,10 +119,17 @@
       }
     })
     .catch(error => {
+      clearTimeout(timeoutId); // Also clear the timeout in the catch block
+
       console.error("Fetch error:", error); // Log the error to the console
       processingMsg.style.display = "none";
       processingCompleteMsg.style.display = "block"; // Still show completion even if error
-      outputMessage.textContent = "Error: " + error;
+
+      if (error.name === 'AbortError') {
+        outputMessage.textContent = "Error: The request timed out. Please try again later.";
+      } else {
+        outputMessage.textContent = "Error: " + error;
+      }
     });
   });
 
