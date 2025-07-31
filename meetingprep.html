@@ -18,7 +18,7 @@
 
 <h1 class="center" style="font-size: 16px; font-weight: bold;">Meeting Prep Planner Agent</h1>
 <p class="center" style="font-size: 14px;">Enter a valid Task Id for the "First Meeting" Task in Salesforce</p>
-  
+
 <br><br>
 
 <div class="center">
@@ -84,19 +84,27 @@
       }
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.text(); // Changed from response.json() to response.text()
     })
-    .then(data => {
+    .then(responseText => {
       processingMsg.style.display = "none";
       processingCompleteMsg.style.display = "block";
 
-      if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty("OutMessage")) {
-        outputMessage.textContent = data[0].OutMessage;
-      } else {
-        outputMessage.textContent = "Error: Could not retrieve OutMessage from the response.";
+      // Check if the responseText is a valid JSON string
+      try {
+        const data = JSON.parse(responseText);
+
+        if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty("OutMessage")) {
+          outputMessage.textContent = data[0].OutMessage;
+        } else {
+          outputMessage.textContent = "Error: Could not retrieve OutMessage from the response.";
+        }
+      } catch (error) {
+        // If JSON parsing fails, assume the entire response is the message
+        outputMessage.textContent = responseText;
       }
     })
     .catch(error => {
