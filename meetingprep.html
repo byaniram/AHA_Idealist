@@ -82,7 +82,12 @@
         "Authorization": `Bearer ${bearerToken}`
       }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
       processingMsg.style.display = "none";
       processingCompleteMsg.style.display = "block";
@@ -94,8 +99,9 @@
       }
     })
     .catch(error => {
+      console.error("Fetch error:", error); // Log the error to the console
       processingMsg.style.display = "none";
-      processingCompleteMsg.style.display = "block";
+      processingCompleteMsg.style.display = "block"; // Still show completion even if error
       outputMessage.textContent = "Error: " + error;
     });
   });
