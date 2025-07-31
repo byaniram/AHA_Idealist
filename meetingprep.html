@@ -81,7 +81,8 @@
       method: "GET",
       headers: {
         "Authorization": `Bearer ${bearerToken}`
-      }
+      },
+      signal: AbortSignal.timeout(600000) // 10 minutes timeout
     })
     .then(response => {
       if (!response.ok) {
