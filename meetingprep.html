@@ -25,7 +25,7 @@
     <br><br>
 
     <label for="task-id-input" style="font-size: 12px;">Enter Task Id:</label>
-    <input type="text" id="task-id-input" maxlength="12">
+    <input type="text" id="task-id-input" maxlength="18">
     <span id="error-message" style="color: red;"></span>
     <br><br>
 
@@ -46,11 +46,11 @@
         const bearerToken = "nWpSsOLoXbTJYHQwsLllP1FVA4FoiuW9";
 
         taskIdInput.addEventListener('input', function() {
-            if (this.value.length === 12) {
+            if (this.value.length === 18) {
                 errorMessage.textContent = '';
                 submitButton.disabled = false;
             } else {
-                errorMessage.textContent = 'Task Id must be 12 characters';
+                errorMessage.textContent = 'Task Id must be 18 characters';
                 submitButton.disabled = true;
             }
         });
@@ -58,8 +58,8 @@
         submitButton.addEventListener('click', function() {
             const taskId = taskIdInput.value;
 
-            if (taskId.length !== 12) { // Double check, just in case
-                errorMessage.textContent = 'Task Id must be 12 characters';
+            if (taskId.length !== 18) { // Double check, just in case
+                errorMessage.textContent = 'Task Id must be 18 characters';
                 taskIdInput.focus();
                 return;
             }
