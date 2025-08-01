@@ -77,10 +77,14 @@
     submitBtn.disabled = true;
 
     try {
-      // Start the task
-      const startResponse = await fetch(`${apiUrl}?TaskId=${taskId}&startTask=true`, {
+      // Start the task with POST and JSON body
+      const startResponse = await fetch(apiUrl, {
         method: "POST",
-        headers: { "Authorization": `Bearer ${bearerToken}` }
+        headers: {
+          "Authorization": `Bearer ${bearerToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ TaskId: taskId, startTask: true })
       });
 
       if (!startResponse.ok) throw new Error(`Start request failed: ${startResponse.status}`);
@@ -90,11 +94,13 @@
         try {
           const statusResponse = await fetch(`${apiUrl}?TaskId=${taskId}`, {
             method: "GET",
-            headers: { "Authorization": `Bearer ${bearerToken}` }
+            headers: {
+              "Authorization": `Bearer ${bearerToken}`,
+              "Content-Type": "application/json"
+            }
           });
 
           if (!statusResponse.ok) {
-            // Capture and show HTTP errors
             const errorText = await statusResponse.text();
             throw new Error(`HTTP ${statusResponse.status}: ${errorText}`);
           }
@@ -104,12 +110,11 @@
           try {
             data = JSON.parse(responseText);
           } catch (parseErr) {
-            // Not valid JSON, continue polling
             console.log("Polling response not ready yet:", responseText);
-            return;
+            return; // Continue polling
           }
 
-          // Check if we got the expected OutMessage
+          // Stop polling if OutMessage is present
           if (Array.isArray(data) && data.length > 0 && data[0].OutMessage) {
             clearInterval(pollingInterval);
             clearTimeout(pollingTimeout);
@@ -125,7 +130,7 @@
           processingCompleteMsg.style.display = "block";
           outputMessage.textContent = "Error during status check: " + pollError;
         }
-      }, 5000); // Poll every 5 seconds
+      }, 5000);
 
       // Safety timeout to stop polling after 15 minutes
       pollingTimeout = setTimeout(() => {
