@@ -82,7 +82,9 @@
         method: "POST",
         headers: {
           "Authorization": `Bearer ${bearerToken}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Connection": "keep-alive",
+          "Accept": "*/*"
         },
         body: JSON.stringify({ TaskId: taskId, startTask: true })
       });
