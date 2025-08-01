@@ -60,7 +60,7 @@
     errorMsg.textContent = "";
   });
 
-  submitBtn.addEventListener("click", async function () {
+  submitBtn.addEventListener("click", function () {
     const taskId = taskIdInput.value.trim();
 
     if (taskId.length !== 18) {
@@ -76,73 +76,70 @@
     outputMessage.textContent = "";
     submitBtn.disabled = true;
 
-    try {
-      // Begin polling every 5 seconds
-      pollingInterval = setInterval(async () => {
-        try {
-          const statusResponse = await fetch(`${apiUrl}?TaskId=${encodeURIComponent(taskId)}`, {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${bearerToken}`,
-              "Content-Type": "application/json"
-            }
-          });
+    // Start polling immediately and every 2 seconds
+    poll(taskId); 
+    pollingInterval = setInterval(() => poll(taskId), 2000);
 
-          if (!statusResponse.ok) {
-            const errorText = await statusResponse.text();
-            throw new Error(`HTTP ${statusResponse.status}: ${errorText}`);
-          }
-
-          const responseText = await statusResponse.text();
-          let data;
-          try {
-            data = JSON.parse(responseText);
-          } catch (parseErr) {
-            console.log("Polling response not ready yet:", responseText);
-            return; // Continue polling if not JSON yet
-          }
-
-          // Check if OutMessage is present
-          if (Array.isArray(data) && data.length > 0 && data[0].OutMessage) {
-            clearInterval(pollingInterval);
-            clearTimeout(pollingTimeout);
-
-            processingMsg.style.display = "none";
-            processingCompleteMsg.style.display = "block";
-
-            // Display OutMessage and make URLs clickable if present
-            const message = data[0].OutMessage;
-            if (message.startsWith("http")) {
-              outputMessage.innerHTML = `<a href="${message}" target="_blank">${message}</a>`;
-            } else if (message.includes("http")) {
-              outputMessage.innerHTML = message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
-            } else {
-              outputMessage.textContent = message;
-            }
-          }
-        } catch (pollError) {
-          clearInterval(pollingInterval);
-          clearTimeout(pollingTimeout);
-          processingMsg.style.display = "none";
-          processingCompleteMsg.style.display = "block";
-          outputMessage.textContent = "Error during status check: " + pollError;
-        }
-      }, 5000);
-
-      // Safety timeout to stop polling after 15 minutes
-      pollingTimeout = setTimeout(() => {
-        clearInterval(pollingInterval);
-        processingMsg.style.display = "none";
-        processingCompleteMsg.style.display = "block";
-        outputMessage.textContent = "Error: Task polling timed out after 15 minutes.";
-      }, 15 * 60 * 1000);
-
-    } catch (error) {
+    // Safety timeout after 15 minutes
+    pollingTimeout = setTimeout(() => {
+      clearInterval(pollingInterval);
       processingMsg.style.display = "none";
       processingCompleteMsg.style.display = "block";
-      outputMessage.textContent = "Error: " + error;
-    }
+      outputMessage.textContent = "Error: Task polling timed out after 15 minutes.";
+    }, 15 * 60 * 1000);
   });
+
+  async function poll(taskId) {
+    try {
+      const statusResponse = await fetch(`${apiUrl}?TaskId=${encodeURIComponent(taskId)}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${bearerToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!statusResponse.ok) {
+        const errorText = await statusResponse.text();
+        throw new Error(`HTTP ${statusResponse.status}: ${errorText}`);
+      }
+
+      const responseText = await statusResponse.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        console.log("Polling response not ready yet:", responseText);
+        return; // Continue polling
+      }
+
+      // Check for OutMessage
+      if (Array.isArray(data) && data.length > 0 && data[0].OutMessage) {
+        clearInterval(pollingInterval);
+        clearTimeout(pollingTimeout);
+
+        processingMsg.style.display = "none";
+        processingCompleteMsg.style.display = "block";
+
+        const message = data[0].OutMessage;
+
+        // Make any URL in the message clickable
+        if (message.startsWith("http")) {
+          outputMessage.innerHTML = `<a href="${message}" target="_blank">${message}</a>`;
+        } else if (message.includes("http")) {
+          outputMessage.innerHTML = message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+        } else {
+          outputMessage.textContent = message;
+        }
+      }
+    } catch (err) {
+      clearInterval(pollingInterval);
+      clearTimeout(pollingTimeout);
+      processingMsg.style.display = "none";
+      processingCompleteMsg.style.display = "block";
+      outputMessage.textContent = "Error: " + err;
+    }
+  }
 
   clearBtn.addEventListener("click", function () {
     taskIdInput.value = "";
