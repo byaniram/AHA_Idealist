@@ -53,6 +53,7 @@
   const bearerToken = "nWpSsOLoXbTJYHQwsLllP1FVA4FoiuW9";
 
   let pollingInterval = null;
+  let pollingTimeout = null;
 
   taskIdInput.addEventListener("input", function () {
     submitBtn.disabled = (taskIdInput.value.length !== 18);
@@ -68,6 +69,7 @@
       return;
     }
 
+    // Reset UI
     errorMsg.textContent = "";
     processingMsg.style.display = "block";
     processingCompleteMsg.style.display = "none";
@@ -75,7 +77,7 @@
     submitBtn.disabled = true;
 
     try {
-      // Start task on server
+      // Start the task
       const startResponse = await fetch(`${apiUrl}?TaskId=${taskId}&startTask=true`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${bearerToken}` }
@@ -86,30 +88,52 @@
       // Begin polling every 5 seconds
       pollingInterval = setInterval(async () => {
         try {
-          const statusResponse = await fetch(`${apiUrl}?TaskId=${taskId}&checkStatus=true`, {
+          const statusResponse = await fetch(`${apiUrl}?TaskId=${taskId}`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${bearerToken}` }
           });
 
-          if (!statusResponse.ok) throw new Error("Status request failed");
+          if (!statusResponse.ok) {
+            // Capture and show HTTP errors
+            const errorText = await statusResponse.text();
+            throw new Error(`HTTP ${statusResponse.status}: ${errorText}`);
+          }
 
-          const statusData = await statusResponse.json();
+          const responseText = await statusResponse.text();
+          let data;
+          try {
+            data = JSON.parse(responseText);
+          } catch (parseErr) {
+            // Not valid JSON, continue polling
+            console.log("Polling response not ready yet:", responseText);
+            return;
+          }
 
-          // Expecting fields: Status, OutMessage
-          const status = statusData[0]?.Status || "";
-          if (status === "Completed" || status === "Error") {
+          // Check if we got the expected OutMessage
+          if (Array.isArray(data) && data.length > 0 && data[0].OutMessage) {
             clearInterval(pollingInterval);
+            clearTimeout(pollingTimeout);
+
             processingMsg.style.display = "none";
             processingCompleteMsg.style.display = "block";
-            outputMessage.textContent = statusData[0]?.OutMessage || "Task completed, but no message returned.";
+            outputMessage.textContent = data[0].OutMessage;
           }
         } catch (pollError) {
           clearInterval(pollingInterval);
+          clearTimeout(pollingTimeout);
           processingMsg.style.display = "none";
           processingCompleteMsg.style.display = "block";
           outputMessage.textContent = "Error during status check: " + pollError;
         }
       }, 5000); // Poll every 5 seconds
+
+      // Safety timeout to stop polling after 15 minutes
+      pollingTimeout = setTimeout(() => {
+        clearInterval(pollingInterval);
+        processingMsg.style.display = "none";
+        processingCompleteMsg.style.display = "block";
+        outputMessage.textContent = "Error: Task polling timed out after 15 minutes.";
+      }, 15 * 60 * 1000);
 
     } catch (error) {
       processingMsg.style.display = "none";
@@ -126,9 +150,8 @@
     processingCompleteMsg.style.display = "none";
     outputMessage.textContent = "";
     taskIdInput.focus();
-    if (pollingInterval) {
-      clearInterval(pollingInterval);
-    }
+    if (pollingInterval) clearInterval(pollingInterval);
+    if (pollingTimeout) clearTimeout(pollingTimeout);
   });
 </script>
 
