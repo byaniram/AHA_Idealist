@@ -52,15 +52,12 @@
   const apiUrl = "https://elastic.snaplogic.com/api/1/rest/slsched/feed/SLoS_Dev/projects/RB_Agent_Creator_IPA2/MP_Task_Outreach_1_API";
   const bearerToken = "nWpSsOLoXbTJYHQwsLllP1FVA4FoiuW9";
 
-  let pollingInterval = null;
-  let pollingTimeout = null;
-
   taskIdInput.addEventListener("input", function () {
     submitBtn.disabled = (taskIdInput.value.length !== 18);
     errorMsg.textContent = "";
   });
 
-  submitBtn.addEventListener("click", function () {
+  submitBtn.addEventListener("click", async function () {
     const taskId = taskIdInput.value.trim();
 
     if (taskId.length !== 18) {
@@ -76,70 +73,55 @@
     outputMessage.textContent = "";
     submitBtn.disabled = true;
 
-    // Start polling immediately and every 2 seconds
-    poll(taskId); 
-    pollingInterval = setInterval(() => poll(taskId), 2000);
-
-    // Safety timeout after 15 minutes
-    pollingTimeout = setTimeout(() => {
-      clearInterval(pollingInterval);
-      processingMsg.style.display = "none";
-      processingCompleteMsg.style.display = "block";
-      outputMessage.textContent = "Error: Task polling timed out after 15 minutes.";
-    }, 15 * 60 * 1000);
-  });
-
-  async function poll(taskId) {
     try {
-      const statusResponse = await fetch(`${apiUrl}?TaskId=${encodeURIComponent(taskId)}`, {
+      // Single GET request
+      const response = await fetch(`${apiUrl}?TaskId=${encodeURIComponent(taskId)}`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${bearerToken}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Connection": "keep-alive"
         }
       });
 
-      if (!statusResponse.ok) {
-        const errorText = await statusResponse.text();
-        throw new Error(`HTTP ${statusResponse.status}: ${errorText}`);
-      }
-
-      const responseText = await statusResponse.text();
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch {
-        console.log("Polling response not ready yet:", responseText);
-        return; // Continue polling
-      }
-
-      // Check for OutMessage
-      if (Array.isArray(data) && data.length > 0 && data[0].OutMessage) {
-        clearInterval(pollingInterval);
-        clearTimeout(pollingTimeout);
-
-        processingMsg.style.display = "none";
-        processingCompleteMsg.style.display = "block";
-
-        const message = data[0].OutMessage;
-
-        // Make any URL in the message clickable
-        if (message.startsWith("http")) {
-          outputMessage.innerHTML = `<a href="${message}" target="_blank">${message}</a>`;
-        } else if (message.includes("http")) {
-          outputMessage.innerHTML = message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
-        } else {
-          outputMessage.textContent = message;
-        }
-      }
-    } catch (err) {
-      clearInterval(pollingInterval);
-      clearTimeout(pollingTimeout);
       processingMsg.style.display = "none";
       processingCompleteMsg.style.display = "block";
-      outputMessage.textContent = "Error: " + err;
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        outputMessage.textContent = `HTTP ${response.status}: ${errorText}`;
+        return;
+      }
+
+      const responseText = await response.text();
+
+      // Try to parse JSON and extract OutMessage
+      try {
+        const data = JSON.parse(responseText);
+        if (Array.isArray(data) && data.length > 0 && data[0].OutMessage) {
+          const message = data[0].OutMessage;
+          // Make URLs clickable
+          if (message.includes("http")) {
+            outputMessage.innerHTML = message.replace(
+              /(https?:\/\/[^\s]+)/g,
+              '<a href="$1" target="_blank">$1</a>'
+            );
+          } else {
+            outputMessage.textContent = message;
+          }
+        } else {
+          outputMessage.textContent = "Error: Could not retrieve OutMessage from the response.";
+        }
+      } catch (parseError) {
+        // If response is not JSON, just show it as plain text
+        outputMessage.textContent = responseText;
+      }
+    } catch (error) {
+      processingMsg.style.display = "none";
+      processingCompleteMsg.style.display = "block";
+      outputMessage.textContent = "Error: " + error;
     }
-  }
+  });
 
   clearBtn.addEventListener("click", function () {
     taskIdInput.value = "";
@@ -149,8 +131,6 @@
     processingCompleteMsg.style.display = "none";
     outputMessage.textContent = "";
     taskIdInput.focus();
-    if (pollingInterval) clearInterval(pollingInterval);
-    if (pollingTimeout) clearTimeout(pollingTimeout);
   });
 </script>
 
