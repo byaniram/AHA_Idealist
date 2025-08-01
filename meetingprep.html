@@ -61,7 +61,7 @@
   });
 
   submitBtn.addEventListener("click", async function () {
-    const taskId = taskIdInput.value;
+    const taskId = taskIdInput.value.trim();
 
     if (taskId.length !== 18) {
       errorMsg.textContent = "Task Id must be 18 characters";
@@ -77,24 +77,10 @@
     submitBtn.disabled = true;
 
     try {
-      // Start the task with POST and JSON body
-      const startResponse = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${bearerToken}`,
-          "Content-Type": "application/json",
-          "Connection": "keep-alive",
-          "Accept": "*/*"
-        },
-        body: JSON.stringify({ TaskId: taskId, startTask: true })
-      });
-
-      if (!startResponse.ok) throw new Error(`Start request failed: ${startResponse.status}`);
-
       // Begin polling every 5 seconds
       pollingInterval = setInterval(async () => {
         try {
-          const statusResponse = await fetch(`${apiUrl}?TaskId=${taskId}`, {
+          const statusResponse = await fetch(`${apiUrl}?TaskId=${encodeURIComponent(taskId)}`, {
             method: "GET",
             headers: {
               "Authorization": `Bearer ${bearerToken}`,
@@ -113,17 +99,26 @@
             data = JSON.parse(responseText);
           } catch (parseErr) {
             console.log("Polling response not ready yet:", responseText);
-            return; // Continue polling
+            return; // Continue polling if not JSON yet
           }
 
-          // Stop polling if OutMessage is present
+          // Check if OutMessage is present
           if (Array.isArray(data) && data.length > 0 && data[0].OutMessage) {
             clearInterval(pollingInterval);
             clearTimeout(pollingTimeout);
 
             processingMsg.style.display = "none";
             processingCompleteMsg.style.display = "block";
-            outputMessage.textContent = data[0].OutMessage;
+
+            // Display OutMessage and make URLs clickable if present
+            const message = data[0].OutMessage;
+            if (message.startsWith("http")) {
+              outputMessage.innerHTML = `<a href="${message}" target="_blank">${message}</a>`;
+            } else if (message.includes("http")) {
+              outputMessage.innerHTML = message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+            } else {
+              outputMessage.textContent = message;
+            }
           }
         } catch (pollError) {
           clearInterval(pollingInterval);
