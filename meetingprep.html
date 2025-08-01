@@ -9,7 +9,7 @@
   .center {
     text-align: center;
   }
-  #task_id_field{
+  #task_id_field {
     width: 200px;
   }
 </style>
@@ -52,17 +52,14 @@
   const apiUrl = "https://elastic.snaplogic.com/api/1/rest/slsched/feed/SLoS_Dev/projects/RB_Agent_Creator_IPA2/MP_Task_Outreach_1_API";
   const bearerToken = "nWpSsOLoXbTJYHQwsLllP1FVA4FoiuW9";
 
-  taskIdInput.addEventListener("input", function() {
-    if (taskIdInput.value.length === 18) {
-      submitBtn.disabled = false;
-      errorMsg.textContent = "";
-    } else {
-      submitBtn.disabled = true;
-      errorMsg.textContent = "";  // Clear the error message until a new invalid input comes
-    }
+  let pollingInterval = null;
+
+  taskIdInput.addEventListener("input", function () {
+    submitBtn.disabled = (taskIdInput.value.length !== 18);
+    errorMsg.textContent = "";
   });
 
-  submitBtn.addEventListener("click", function() {
+  submitBtn.addEventListener("click", async function () {
     const taskId = taskIdInput.value;
 
     if (taskId.length !== 18) {
@@ -75,65 +72,53 @@
     processingMsg.style.display = "block";
     processingCompleteMsg.style.display = "none";
     outputMessage.textContent = "";
-    submitBtn.disabled = true; // Disable the submit button after click
+    submitBtn.disabled = true;
 
-    let controller = new AbortController();
-    let signal = controller.signal;
+    try {
+      // Start task on server
+      const startResponse = await fetch(`${apiUrl}?TaskId=${taskId}&startTask=true`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${bearerToken}` }
+      });
 
-    // Set the timeout for 5 minutes (600000 milliseconds)
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-    }, 600000);
+      if (!startResponse.ok) throw new Error(`Start request failed: ${startResponse.status}`);
 
+      // Begin polling every 5 seconds
+      pollingInterval = setInterval(async () => {
+        try {
+          const statusResponse = await fetch(`${apiUrl}?TaskId=${taskId}&checkStatus=true`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${bearerToken}` }
+          });
 
-    fetch(`${apiUrl}?TaskId=${taskId}`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${bearerToken}`
-      },
-      signal: signal
-    })
-    .then(response => {
-      clearTimeout(timeoutId); // Clear the timeout if the request completes successfully
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.text(); // Changed from response.json() to response.text()
-    })
-    .then(responseText => {
+          if (!statusResponse.ok) throw new Error("Status request failed");
+
+          const statusData = await statusResponse.json();
+
+          // Expecting fields: Status, OutMessage
+          const status = statusData[0]?.Status || "";
+          if (status === "Completed" || status === "Error") {
+            clearInterval(pollingInterval);
+            processingMsg.style.display = "none";
+            processingCompleteMsg.style.display = "block";
+            outputMessage.textContent = statusData[0]?.OutMessage || "Task completed, but no message returned.";
+          }
+        } catch (pollError) {
+          clearInterval(pollingInterval);
+          processingMsg.style.display = "none";
+          processingCompleteMsg.style.display = "block";
+          outputMessage.textContent = "Error during status check: " + pollError;
+        }
+      }, 5000); // Poll every 5 seconds
+
+    } catch (error) {
       processingMsg.style.display = "none";
       processingCompleteMsg.style.display = "block";
-
-      // Check if the responseText is a valid JSON string
-      try {
-        const data = JSON.parse(responseText);
-
-        if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty("OutMessage")) {
-          outputMessage.textContent = data[0].OutMessage;
-        } else {
-          outputMessage.textContent = "Error: Could not retrieve OutMessage from the response.";
-        }
-      } catch (error) {
-        // If JSON parsing fails, assume the entire response is the message
-        outputMessage.textContent = responseText;
-      }
-    })
-    .catch(error => {
-      clearTimeout(timeoutId); // Also clear the timeout in the catch block
-
-      console.error("Fetch error:", error); // Log the error to the console
-      processingMsg.style.display = "none";
-      processingCompleteMsg.style.display = "block"; // Still show completion even if error
-
-      if (error.name === 'AbortError') {
-        outputMessage.textContent = "Error: The request timed out. Please try again later.";
-      } else {
-        outputMessage.textContent = "Error: " + error;
-      }
-    });
+      outputMessage.textContent = "Error: " + error;
+    }
   });
 
-  clearBtn.addEventListener("click", function() {
+  clearBtn.addEventListener("click", function () {
     taskIdInput.value = "";
     submitBtn.disabled = true;
     errorMsg.textContent = "";
@@ -141,6 +126,9 @@
     processingCompleteMsg.style.display = "none";
     outputMessage.textContent = "";
     taskIdInput.focus();
+    if (pollingInterval) {
+      clearInterval(pollingInterval);
+    }
   });
 </script>
 
