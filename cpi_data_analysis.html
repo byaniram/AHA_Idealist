@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DSCI-D590-9369 - Final Project</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+        }
+
+        .header-main {
+            text-align: center;
+            font-weight: bold;
+            color: brown;
+            font-size: 16px;
+        }
+
+        .header-sub {
+            text-align: center;
+            font-weight: bold;
+            color: brown;
+            font-size: 15px;
+        }
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 6px;
+        }
+
+        table.cpi-table {
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        table.cpi-table th,
+        table.cpi-table td {
+            border: 1px solid black;
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .dropdown-label {
+            font-size: 14px;
+            color: brown;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        select {
+            font-size: 12px;
+            padding: 4px;
+            min-width: 350px;
+        }
+
+        #resultSection {
+            margin-top: 16px;
+        }
+
+        #doneButton {
+            margin-top: 12px;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        img.analysis-image {
+            max-width: 100%;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1) Header -->
+    <div class="header-main">DSCI-D590-9369 - Final Project</div>
+    <br>
+    <div class="header-sub">Analysis of CPI data for the years 2015-2025</div>
+
+    <br><br>
+
+    <!-- 2) CPI Data parameters table -->
+    <div class="section-title">CPI Data parameters</div>
+
+    <table class="cpi-table">
+        <tr><td>Medical Insurance</td></tr>
+        <tr><td>Recreation</td></tr>
+        <tr><td>Food &amp; Beverages</td></tr>
+        <tr><td>Tuition &amp; Child Care</td></tr>
+        <tr><td>Airfare</td></tr>
+        <tr><td>House Rent</td></tr>
+        <tr><td>Electricity</td></tr>
+        <tr><td>Auto fuel</td></tr>
+        <tr><td>Cable &amp; Communication</td></tr>
+    </table>
+
+    <!-- 3) Dropdown label -->
+    <div class="dropdown-label">Select the Analysis / Model from the dropdown</div>
+
+    <!-- 4) Dropdown (alphabetical order) -->
+    <select id="analysisSelect" onchange="handleSelection(event)">
+        <option value="">-- Select an analysis / model --</option>
+        <option value="CPI Forecast using Exponential Smoothing">CPI Forecast using Exponential Smoothing</option>
+        <option value="Correlation Matrix">Correlation Matrix</option>
+        <option value="Decision Tree - CPI Classification Model">Decision Tree - CPI Classification Model</option>
+        <option value="Decision Tree Performance Metrics (F1 Score vs Recall)">Decision Tree Performance Metrics (F1 Score vs Recall)</option>
+        <option value="EDA (Exploratory Data Analysis)">EDA (Exploratory Data Analysis)</option>
+        <option value="Feature Importance in Decision Tree diagram">Feature Importance in Decision Tree diagram</option>
+        <option value="Fitted vs Actual CPI Exponential Smoothing">Fitted vs Actual CPI Exponential Smoothing</option>
+        <option value="Regression analysis">Regression analysis</option>
+    </select>
+
+    <!-- 5) Dynamic result area -->
+    <div id="resultSection"></div>
+
+    <!-- 6) Done button (shown only after selection) -->
+    <button id="doneButton" style="display:none;" onclick="resetPage()">Done</button>
+
+    <script>
+        // Will hold the full HTML text of DS_part2_doc1.html once loaded
+        let notebookHtml = null;
+
+        // Mapping from dropdown label to metadata:
+        // - marker: substring to locate the relevant section in DS_part2_doc1.html
+        // - description: standard DS definition in CPI context
+        // - summary: short explanation of the specific image
+        const analyses = {
+            "EDA (Exploratory Data Analysis)": {
+                marker: 'id="EDA"',
+                description: "In this CPI context, EDA (Exploratory Data Analysis) summarizes and visualizes patterns in CPI components from 2015–2025, highlighting trends, distributions, and potential outliers across categories like rent, food, and medical costs.",
+                summary: "This EDA visualization provides an overview of the CPI data over time, helping you quickly see how different expense categories have evolved between 2015 and 2025."
+            },
+            "Correlation Matrix": {
+                marker: "Correlation Matrix",
+                description: "A correlation matrix for the CPI dataset quantifies how strongly different CPI components, such as House Rent, Auto fuel, and Food & Beverages, move together over the 2015–2025 period.",
+                summary: "The correlation heatmap shows which CPI categories are positively or negatively related, making it easier to identify pairs of expenses that tend to rise or fall together."
+            },
+            "Regression analysis": {
+                marker: 'id="Regression"',
+                description: "Regression analysis models overall CPI (or an inflation-related target) as a numerical outcome explained by predictors like rent, airfare, food, and other CPI components.",
+                summary: "The regression output and plot illustrate how well the selected CPI features explain variation in the target CPI measure and how accurate the model’s predictions are."
+            },
+            "Feature Importance in Decision Tree diagram": {
+                marker: "Generate Feature Importance chart.",
+                description: "Feature importance in a decision tree quantifies how much each CPI component (e.g., House Rent, Auto fuel, Medical Insurance) contributes to correctly classifying periods into inflation categories.",
+                summary: "The feature-importance bar chart highlights which CPI factors the decision tree relied on most when splitting nodes to distinguish low, medium, and high inflation periods."
+            },
+            "Decision Tree - CPI Classification Model": {
+                marker: "Decision Tree - CPI Classification Model",
+                description: "The CPI classification decision tree uses thresholds on CPI components to split the data into branches that categorize each time period as Low, Medium, or High inflation.",
+                summary: "This decision tree diagram shows the full CPI classification model, including splits, thresholds, and class labels at each leaf node."
+            },
+            "Decision Tree Performance Metrics (F1 Score vs Recall)": {
+                marker: "Decision Tree Performance Metrics (F1-Score vs Recall)",
+                description: "Decision tree performance metrics like F1-score and recall summarize how well the CPI classifier balances precision and sensitivity when identifying inflation categories.",
+                summary: "The scatter/point plot compares F1-score and recall values for the CPI decision tree model, illustrating the trade-off between capturing all true cases and avoiding misclassifications."
+            },
+            "CPI Forecast using Exponential Smoothing": {
+                marker: "CPI Forecast (House Rent) using Exponential Smoothing",
+                description: "Exponential smoothing is a time-series technique that creates a smoothed CPI trend and forecasts future values by weighting recent CPI observations more heavily than older ones.",
+                summary: "This time-series chart displays the historical CPI (for House Rent) along with the exponentially smoothed forecast curve, projecting CPI levels into future periods."
+            },
+            "Fitted vs Actual CPI Exponential Smoothing": {
+                marker: "Fitted vs Actual CPI (House Rent) - Exponential Smoothing",
+                description: "A fitted vs actual CPI plot compares the exponential smoothing model’s fitted values against the observed CPI data to assess how closely the model tracks the historical series.",
+                summary: "The plotted lines show actual vs fitted CPI for House Rent, allowing you to visually judge the quality of the exponential smoothing fit over the 2015–2025 period."
+            }
+        };
+
+        // Extract the first <img> src that appears after a given marker in the HTML text
+        function extractImageSrc(htmlText, marker) {
+            const markerIndex = htmlText.indexOf(marker);
+            if (markerIndex === -1) {
+                return null;
+            }
+            const imgIndex = htmlText.indexOf('<img', markerIndex);
+            if (imgIndex === -1) {
+                return null;
+            }
+            const srcIndex = htmlText.indexOf('src="', imgIndex);
+            if (srcIndex === -1) {
+                return null;
+            }
+            const srcStart = srcIndex + 5;
+            const srcEnd = htmlText.indexOf('"', srcStart);
+            if (srcEnd === -1) {
+                return null;
+            }
+            return htmlText.substring(srcStart, srcEnd);
+        }
+
+        // Handle dropdown selection
+        async function handleSelection(event) {
+            const selectedKey = event.target.value;
+            const resultDiv = document.getElementById('resultSection');
+            const doneButton = document.getElementById('doneButton');
+
+            // Reset result area & hide Done button
+            resultDiv.innerHTML = "";
+            doneButton.style.display = "none";
+
+            if (!selectedKey) {
+                return; // nothing selected
+            }
+
+            const info = analyses[selectedKey];
+            if (!info) {
+                return;
+            }
+
+            // "Fetching results..." message
+            const fetchingP = document.createElement('p');
+            fetchingP.textContent = "Fetching results…";
+            fetchingP.style.fontSize = "12px";
+            resultDiv.appendChild(fetchingP);
+
+            // Load DS_part2_doc1.html once
+            if (!notebookHtml) {
+                try {
+                    const response = await fetch("DS_part2_doc1.html");
+                    if (!response.ok) {
+                        fetchingP.textContent = "Error fetching DS_part2_doc1.html.";
+                        return;
+                    }
+                    notebookHtml = await response.text();
+                } catch (e) {
+                    fetchingP.textContent = "Error fetching DS_part2_doc1.html.";
+                    return;
+                }
+            }
+
+            // Standard data science definition in CPI context
+            const descP = document.createElement('p');
+            descP.textContent = info.description;
+            descP.style.fontSize = "12px";
+            descP.style.marginTop = "6px";
+            resultDiv.appendChild(descP);
+
+            // Extract and show image
+            const imgSrc = extractImageSrc(notebookHtml, info.marker);
+            if (imgSrc) {
+                const img = document.createElement('img');
+                img.className = "analysis-image";
+                img.src = imgSrc;
+                img.alt = selectedKey + " chart from DS_part2_doc1.html";
+                resultDiv.appendChild(img);
+            } else {
+                const errorP = document.createElement('p');
+                errorP.textContent = "Could not locate the corresponding image in DS_part2_doc1.html.";
+                errorP.style.fontSize = "12px";
+                errorP.style.color = "red";
+                errorP.style.marginTop = "8px";
+                resultDiv.appendChild(errorP);
+            }
+
+            // Short summary of the image/analysis
+            const summaryP = document.createElement('p');
+            summaryP.textContent = info.summary;
+            summaryP.style.fontSize = "12px";
+            summaryP.style.marginTop = "6px";
+            resultDiv.appendChild(summaryP);
+
+            // Show Done button
+            doneButton.style.display = "inline-block";
+        }
+
+        // Reset page to initial state when Done is clicked
+        function resetPage() {
+            const select = document.getElementById('analysisSelect');
+            const resultDiv = document.getElementById('resultSection');
+            const doneButton = document.getElementById('doneButton');
+
+            select.selectedIndex = 0; // back to placeholder
+            resultDiv.innerHTML = "";
+            doneButton.style.display = "none";
+        }
+    </script>
+
+</body>
+</html>
