@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 12px;
+            font-size: 14px;
             margin: 20px;
         }
 
@@ -24,7 +24,7 @@
             font-size: 15px;
         }
         .section-title {
-            font-size: 12px;
+            font-size: 14px;
             font-weight: bold;
             margin-top: 20px;
             margin-bottom: 6px;
@@ -39,7 +39,7 @@
         table.cpi-table td {
             border: 1px solid black;
             padding: 6px 10px;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         .dropdown-label {
@@ -51,7 +51,7 @@
         }
 
         select {
-            font-size: 12px;
+            font-size: 14px;
             padding: 4px;
             min-width: 350px;
         }
@@ -61,9 +61,9 @@
         }
 
         #doneButton {
-            margin-top: 12px;
-            padding: 6px 12px;
-            font-size: 12px;
+            margin-top: 14px;
+            padding: 6px 14px;
+            font-size: 14px;
         }
 
         img.analysis-image {
@@ -99,7 +99,7 @@
     </table>
 
     <!-- 3) Dropdown label -->
-    <div class="dropdown-label">Select the Analysis / Model from the dropdown</div>
+    <div class="dropdown-label">Select the Analysis / Model from the dropdown. Click Done to return. </div>
 
     <!-- 4) Dropdown (alphabetical order) -->
     <select id="analysisSelect" onchange="handleSelection(event)">
@@ -192,7 +192,6 @@
             }
             return htmlText.substring(srcStart, srcEnd);
         }
-
         // Handle dropdown selection
         async function handleSelection(event) {
             const selectedKey = event.target.value;
@@ -215,7 +214,7 @@
             // "Fetching results..." message
             const fetchingP = document.createElement('p');
             fetchingP.textContent = "Fetching results…";
-            fetchingP.style.fontSize = "12px";
+            fetchingP.style.fontSize = "14px";
             resultDiv.appendChild(fetchingP);
 
             // Load DS_part2_doc1.html once
@@ -236,7 +235,7 @@
             // Standard data science definition in CPI context
             const descP = document.createElement('p');
             descP.textContent = info.description;
-            descP.style.fontSize = "12px";
+            descP.style.fontSize = "14px";
             descP.style.marginTop = "6px";
             resultDiv.appendChild(descP);
 
@@ -251,7 +250,7 @@
             } else {
                 const errorP = document.createElement('p');
                 errorP.textContent = "Could not locate the corresponding image in DS_part2_doc1.html.";
-                errorP.style.fontSize = "12px";
+                errorP.style.fontSize = "14px";
                 errorP.style.color = "red";
                 errorP.style.marginTop = "8px";
                 resultDiv.appendChild(errorP);
@@ -260,7 +259,7 @@
             // Short summary of the image/analysis
             const summaryP = document.createElement('p');
             summaryP.textContent = info.summary;
-            summaryP.style.fontSize = "12px";
+            summaryP.style.fontSize = "14px";
             summaryP.style.marginTop = "6px";
             resultDiv.appendChild(summaryP);
 
