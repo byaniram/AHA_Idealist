@@ -1,0 +1,1278 @@
+{
+    "property_map": {
+        "info": {
+            "notes": {
+                "value": ""
+            },
+            "author": {
+                "value": ""
+            },
+            "purpose": {
+                "value": null
+            },
+            "pipeline_doc_uri": {
+                "value": null
+            },
+            "label": {
+                "value": "MT_Ups_Postgres_Idos_live_inv"
+            }
+        },
+        "error": {
+            "error_behavior": {
+                "value": "none"
+            }
+        },
+        "settings": {
+            "param_table": {
+                "value": []
+            },
+            "imports": {
+                "value": []
+            }
+        },
+        "input": {},
+        "output": {}
+    },
+    "snap_map": {
+        "f471a072-357e-4f9f-a45c-4e6cc2f3b853": {
+            "class_fqid": "com-snaplogic-snaps-flow-pipeexec_1-UNKNOWN",
+            "class_id": "com-snaplogic-snaps-flow-pipeexec",
+            "class_version": 1,
+            "instance_fqid": "f471a072-357e-4f9f-a45c-4e6cc2f3b853_1",
+            "instance_id": "f471a072-357e-4f9f-a45c-4e6cc2f3b853",
+            "instance_version": 1,
+            "property_map": {
+                "account": {
+                    "account_ref": {
+                        "value": {}
+                    }
+                },
+                "error": {
+                    "error0": {
+                        "view_type": {
+                            "value": "document"
+                        },
+                        "label": {
+                            "value": "error0"
+                        }
+                    },
+                    "error_behavior": {
+                        "value": "fail"
+                    }
+                },
+                "output": {
+                    "output0": {
+                        "label": {
+                            "value": "output0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "input": {},
+                "info": {
+                    "notes": {
+                        "value": null
+                    },
+                    "label": {
+                        "value": "Pipeline Execute - GET child_GET_LASTRUNTIME"
+                    }
+                },
+                "settings": {
+                    "pipeline": {
+                        "value": "EDT_PRD/shared/child_GET_LASTRUNTIME",
+                        "expression": false
+                    },
+                    "batchSize": {
+                        "value": 1,
+                        "expression": false
+                    },
+                    "poolSize": {
+                        "value": 1,
+                        "expression": false
+                    },
+                    "params": {
+                        "value": [
+                            {
+                                "paramName": {
+                                    "value": "ORG"
+                                },
+                                "paramValue": {
+                                    "value": "pipe.org",
+                                    "expression": true
+                                }
+                            },
+                            {
+                                "paramName": {
+                                    "value": "PROJECT_SPACE"
+                                },
+                                "paramValue": {
+                                    "value": "pipe.projectPath.split('/')[2]",
+                                    "expression": true
+                                }
+                            },
+                            {
+                                "paramName": {
+                                    "value": "PROJECT"
+                                },
+                                "paramValue": {
+                                    "value": "pipe.projectPath.split('/')[3]",
+                                    "expression": true
+                                }
+                            },
+                            {
+                                "paramName": {
+                                    "value": "PIPELINE_NAME"
+                                },
+                                "paramValue": {
+                                    "value": "pipe.label",
+                                    "expression": true
+                                }
+                            }
+                        ]
+                    },
+                    "snaplexGovernor": {
+                        "value": "SNAPLEX_WITH_PATH"
+                    },
+                    "reuse": {
+                        "value": false
+                    },
+                    "executable_during_suggest": {
+                        "value": true
+                    }
+                }
+            },
+            "class_build_tag": "UNKNOWN"
+        },
+        "d813e974-d0ec-487d-baf3-4e77b012e949": {
+            "class_fqid": "com-snaplogic-snaps-flow-copy_1-UNKNOWN",
+            "class_id": "com-snaplogic-snaps-flow-copy",
+            "class_version": 1,
+            "instance_fqid": "d813e974-d0ec-487d-baf3-4e77b012e949_1",
+            "instance_id": "d813e974-d0ec-487d-baf3-4e77b012e949",
+            "instance_version": 1,
+            "property_map": {
+                "account": {
+                    "account_ref": {
+                        "value": {}
+                    }
+                },
+                "error": {
+                    "error0": {
+                        "view_type": {
+                            "value": "document"
+                        },
+                        "label": {
+                            "value": "error0"
+                        }
+                    },
+                    "error_behavior": {
+                        "value": "fail"
+                    }
+                },
+                "output": {
+                    "output0": {
+                        "label": {
+                            "value": "output0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    },
+                    "output1": {
+                        "label": {
+                            "value": "output1"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "input": {
+                    "input0": {
+                        "label": {
+                            "value": "input0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "info": {
+                    "notes": {
+                        "value": null
+                    },
+                    "label": {
+                        "value": "Copy - Branch LASTRUNTIME vs LASTRUNTIMENEW"
+                    }
+                },
+                "settings": {}
+            },
+            "class_build_tag": "UNKNOWN"
+        },
+        "e4dbe298-6be2-41d0-9024-599a40f76a7c": {
+            "class_fqid": "com-snaplogic-snaps-sqlserver-select_3-UNKNOWN",
+            "class_id": "com-snaplogic-snaps-sqlserver-select",
+            "class_version": 3,
+            "instance_fqid": "e4dbe298-6be2-41d0-9024-599a40f76a7c_1",
+            "instance_id": "e4dbe298-6be2-41d0-9024-599a40f76a7c",
+            "instance_version": 1,
+            "property_map": {
+                "account": {
+                    "account_ref": {
+                        "value": {}
+                    }
+                },
+                "error": {
+                    "error0": {
+                        "view_type": {
+                            "value": "document"
+                        },
+                        "label": {
+                            "value": "error0"
+                        }
+                    },
+                    "error_behavior": {
+                        "value": "fail"
+                    }
+                },
+                "output": {
+                    "outputRows": {
+                        "label": {
+                            "value": "rows"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "input": {
+                    "input0": {
+                        "label": {
+                            "value": "input0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "info": {
+                    "notes": {
+                        "value": null
+                    },
+                    "label": {
+                        "value": "SQL Server - Select vwIdosInventory"
+                    }
+                },
+                "settings": {
+                    "schemaName": {
+                        "value": "dbo",
+                        "expression": false
+                    },
+                    "tableName": {
+                        "value": "vwIdosInventory",
+                        "expression": false
+                    },
+                    "whereClause": {
+                        "value": "\"ExportStamp >= DATEADD(mi, DATEDIFF(mi, GETUTCDATE(), GETDATE()), '\" + $LASTRUNTIME + \"')\"",
+                        "expression": true
+                    },
+                    "outputFields": {
+                        "value": [
+                            {
+                                "outputField": {
+                                    "value": "StockNumber",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "Manufacturer",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "Brand",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "Model",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "ModelYear",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "DateReceived",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "GLLocation",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "Designation",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "Status",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "DeliveryDate",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "OriginalTypeCode",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "NetSaleAmount",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "TotalCost",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "LotLocation",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "SpecialWebPrice",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "CapType",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "StockedViaCode",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "SaleType",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "PostDate",
+                                    "expression": false
+                                }
+                            },
+                            {
+                                "outputField": {
+                                    "value": "Updated_at",
+                                    "expression": false
+                                }
+                            }
+                        ]
+                    },
+                    "orderBy": {
+                        "value": []
+                    },
+                    "fetchOutputFieldsInSchema": {
+                        "value": false
+                    },
+                    "passThrough": {
+                        "value": true
+                    },
+                    "autoCommit": {
+                        "value": "False"
+                    },
+                    "maxRetryProp": {
+                        "value": 0,
+                        "expression": false
+                    },
+                    "retryIntervalProp": {
+                        "value": 1,
+                        "expression": false
+                    },
+                    "stagingMode": {
+                        "value": "In memory"
+                    },
+                    "unique_identifier_column_option": {
+                        "value": "Convert to lower case (default)"
+                    },
+                    "sessionParamsProp": {
+                        "value": []
+                    }
+                }
+            },
+            "class_build_tag": "UNKNOWN"
+        },
+        "235fca08-8541-4295-af5d-422e1b1dbb67": {
+            "class_fqid": "com-snaplogic-snaps-transform-datatransform_4-UNKNOWN",
+            "class_id": "com-snaplogic-snaps-transform-datatransform",
+            "class_version": 4,
+            "instance_fqid": "235fca08-8541-4295-af5d-422e1b1dbb67_1",
+            "instance_id": "235fca08-8541-4295-af5d-422e1b1dbb67",
+            "instance_version": 1,
+            "property_map": {
+                "account": {
+                    "account_ref": {
+                        "value": {}
+                    }
+                },
+                "error": {
+                    "error0": {
+                        "view_type": {
+                            "value": "document"
+                        },
+                        "label": {
+                            "value": "error0"
+                        }
+                    },
+                    "error_behavior": {
+                        "value": "fail"
+                    }
+                },
+                "output": {
+                    "output0": {
+                        "label": {
+                            "value": "output0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "input": {
+                    "input0": {
+                        "label": {
+                            "value": "input0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "info": {
+                    "notes": {
+                        "value": null
+                    },
+                    "label": {
+                        "value": "Mapper - Rename and Cast Inventory Fields"
+                    }
+                },
+                "settings": {
+                    "passThrough": {
+                        "value": false
+                    },
+                    "transformations": {
+                        "value": {
+                            "mappingTable": {
+                                "value": [
+                                    {
+                                        "expression": {
+                                            "value": "$StockNumber",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "stock_number"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$Manufacturer",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "manufacturer"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$Brand",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "brand"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$Model",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "model"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "'' + $ModelYear",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "model_year"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "'' + $DateReceived",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "date_received"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$GLLocation",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "gl_location"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$Designation",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "designation"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$Status",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "status"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "'' + $DeliveryDate",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "delivery_date"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$OriginalTypeCode",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "type_code"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "'' + $NetSaleAmount",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "net_sale_amount"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "'' + $TotalCost",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "total_cost"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$LotLocation",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "lot_location"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "'' + $SpecialWebPrice",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "special_web_price"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$CapType",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "cap_type"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$StockedViaCode",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "stocked_via_code"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$SaleType",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "sale_type"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "'' + $PostDate",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "post_date"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$Updated_at",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "updated_at"
+                                        }
+                                    }
+                                ]
+                            },
+                            "mappingRoot": {
+                                "value": "$"
+                            }
+                        }
+                    },
+                    "nullSafeAccess": {
+                        "value": false
+                    },
+                    "omitExpressionIfMissing": {
+                        "value": false
+                    }
+                }
+            },
+            "class_build_tag": "UNKNOWN"
+        },
+        "e1c36fe1-90c2-495c-91f4-beb532053e41": {
+            "class_fqid": "com-snaplogic-snaps-postgres-bulkupsert_1-UNKNOWN",
+            "class_id": "com-snaplogic-snaps-postgres-bulkupsert",
+            "class_version": 1,
+            "instance_fqid": "e1c36fe1-90c2-495c-91f4-beb532053e41_1",
+            "instance_id": "e1c36fe1-90c2-495c-91f4-beb532053e41",
+            "instance_version": 1,
+            "property_map": {
+                "account": {
+                    "account_ref": {
+                        "value": {}
+                    }
+                },
+                "error": {
+                    "error0": {
+                        "view_type": {
+                            "value": "document"
+                        },
+                        "label": {
+                            "value": "error0"
+                        }
+                    },
+                    "error_behavior": {
+                        "value": "fail"
+                    }
+                },
+                "output": {
+                    "output0": {
+                        "label": {
+                            "value": "output0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "input": {
+                    "inputRows": {
+                        "label": {
+                            "value": "rows"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "info": {
+                    "notes": {
+                        "value": null
+                    },
+                    "label": {
+                        "value": "PostgreSQL - Bulk Upsert live_inv"
+                    }
+                },
+                "settings": {
+                    "schemaName": {
+                        "value": "public",
+                        "expression": false
+                    },
+                    "tableName": {
+                        "value": "live_inv",
+                        "expression": false
+                    },
+                    "columnList": {
+                        "value": [
+                            {
+                                "columns": {
+                                    "value": "stock_number",
+                                    "expression": false
+                                }
+                            }
+                        ]
+                    },
+                    "executable_during_suggest": {
+                        "value": false
+                    },
+                    "additionalOptionsProp": {
+                        "value": []
+                    },
+                    "sessionParamsProp": {
+                        "value": []
+                    }
+                }
+            },
+            "class_build_tag": "UNKNOWN"
+        },
+        "7a7ab1f3-362d-41f1-a7e2-aa4ad14074df": {
+            "class_fqid": "com-snaplogic-snaps-flow-gate_1-UNKNOWN",
+            "class_id": "com-snaplogic-snaps-flow-gate",
+            "class_version": 1,
+            "instance_fqid": "7a7ab1f3-362d-41f1-a7e2-aa4ad14074df_1",
+            "instance_id": "7a7ab1f3-362d-41f1-a7e2-aa4ad14074df",
+            "instance_version": 1,
+            "property_map": {
+                "account": {
+                    "account_ref": {
+                        "value": {}
+                    }
+                },
+                "error": {
+                    "error_behavior": {
+                        "value": "fail"
+                    }
+                },
+                "output": {
+                    "output0": {
+                        "label": {
+                            "value": "output0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "input": {
+                    "input0": {
+                        "label": {
+                            "value": "input0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    },
+                    "input1": {
+                        "label": {
+                            "value": "input1"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "info": {
+                    "notes": {
+                        "value": null
+                    },
+                    "label": {
+                        "value": "Gate - Synchronize Upsert Stream and Retained Watermark"
+                    }
+                },
+                "settings": {
+                    "outputDocContent": {
+                        "value": "All input documents"
+                    },
+                    "ignoreEmptyStream": {
+                        "value": false
+                    }
+                }
+            },
+            "class_build_tag": "UNKNOWN"
+        },
+        "f999041d-6cb6-4bd7-a785-090a375aa093": {
+            "class_fqid": "com-snaplogic-snaps-transform-datatransform_4-UNKNOWN",
+            "class_id": "com-snaplogic-snaps-transform-datatransform",
+            "class_version": 4,
+            "instance_fqid": "f999041d-6cb6-4bd7-a785-090a375aa093_1",
+            "instance_id": "f999041d-6cb6-4bd7-a785-090a375aa093",
+            "instance_version": 1,
+            "property_map": {
+                "account": {
+                    "account_ref": {
+                        "value": {}
+                    }
+                },
+                "error": {
+                    "error0": {
+                        "view_type": {
+                            "value": "document"
+                        },
+                        "label": {
+                            "value": "error0"
+                        }
+                    },
+                    "error_behavior": {
+                        "value": "fail"
+                    }
+                },
+                "output": {
+                    "output0": {
+                        "label": {
+                            "value": "output0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "input": {
+                    "input0": {
+                        "label": {
+                            "value": "input0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "info": {
+                    "notes": {
+                        "value": null
+                    },
+                    "label": {
+                        "value": "Mapper - Rejoin LASTRUNTIMENEW for SET Call"
+                    }
+                },
+                "settings": {
+                    "passThrough": {
+                        "value": false
+                    },
+                    "transformations": {
+                        "value": {
+                            "mappingTable": {
+                                "value": [
+                                    {
+                                        "expression": {
+                                            "value": "pipe.org",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "ORG"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "pipe.projectPath.split('/')[2]",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "PROJECT_SPACE"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "pipe.projectPath.split('/')[3]",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "PROJECT"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "pipe.label",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "PIPELINE_NAME"
+                                        }
+                                    },
+                                    {
+                                        "expression": {
+                                            "value": "$input1[0].LASTRUNTIMENEW",
+                                            "expression": true
+                                        },
+                                        "targetPath": {
+                                            "value": "LAST_RUNTIME"
+                                        }
+                                    }
+                                ]
+                            },
+                            "mappingRoot": {
+                                "value": "$"
+                            }
+                        }
+                    },
+                    "nullSafeAccess": {
+                        "value": false
+                    },
+                    "omitExpressionIfMissing": {
+                        "value": false
+                    }
+                }
+            },
+            "class_build_tag": "UNKNOWN"
+        },
+        "ee435b2e-6549-47a0-b17d-3f1ee6567143": {
+            "class_fqid": "com-snaplogic-snaps-flow-pipeexec_1-UNKNOWN",
+            "class_id": "com-snaplogic-snaps-flow-pipeexec",
+            "class_version": 1,
+            "instance_fqid": "ee435b2e-6549-47a0-b17d-3f1ee6567143_1",
+            "instance_id": "ee435b2e-6549-47a0-b17d-3f1ee6567143",
+            "instance_version": 1,
+            "property_map": {
+                "account": {
+                    "account_ref": {
+                        "value": {}
+                    }
+                },
+                "error": {
+                    "error0": {
+                        "view_type": {
+                            "value": "document"
+                        },
+                        "label": {
+                            "value": "error0"
+                        }
+                    },
+                    "error_behavior": {
+                        "value": "fail"
+                    }
+                },
+                "output": {},
+                "input": {
+                    "input0": {
+                        "label": {
+                            "value": "input0"
+                        },
+                        "view_type": {
+                            "value": "document"
+                        }
+                    }
+                },
+                "info": {
+                    "notes": {
+                        "value": null
+                    },
+                    "label": {
+                        "value": "Pipeline Execute - SET child_SET_LASTRUNTIME"
+                    }
+                },
+                "settings": {
+                    "pipeline": {
+                        "value": "EDT_PRD/shared/child_SET_LASTRUNTIME",
+                        "expression": false
+                    },
+                    "batchSize": {
+                        "value": 1,
+                        "expression": false
+                    },
+                    "poolSize": {
+                        "value": 1,
+                        "expression": false
+                    },
+                    "params": {
+                        "value": [
+                            {
+                                "paramName": {
+                                    "value": "ORG"
+                                },
+                                "paramValue": {
+                                    "value": "$ORG",
+                                    "expression": true
+                                }
+                            },
+                            {
+                                "paramName": {
+                                    "value": "PROJECT_SPACE"
+                                },
+                                "paramValue": {
+                                    "value": "$PROJECT_SPACE",
+                                    "expression": true
+                                }
+                            },
+                            {
+                                "paramName": {
+                                    "value": "PROJECT"
+                                },
+                                "paramValue": {
+                                    "value": "$PROJECT",
+                                    "expression": true
+                                }
+                            },
+                            {
+                                "paramName": {
+                                    "value": "PIPELINE_NAME"
+                                },
+                                "paramValue": {
+                                    "value": "$PIPELINE_NAME",
+                                    "expression": true
+                                }
+                            },
+                            {
+                                "paramName": {
+                                    "value": "LAST_RUNTIME"
+                                },
+                                "paramValue": {
+                                    "value": "$LAST_RUNTIME",
+                                    "expression": true
+                                }
+                            }
+                        ]
+                    },
+                    "snaplexGovernor": {
+                        "value": "SNAPLEX_WITH_PATH"
+                    },
+                    "reuse": {
+                        "value": false
+                    },
+                    "executable_during_suggest": {
+                        "value": true
+                    }
+                }
+            },
+            "class_build_tag": "UNKNOWN"
+        }
+    },
+    "link_map": {
+        "link100": {
+            "src_id": "f471a072-357e-4f9f-a45c-4e6cc2f3b853",
+            "dst_id": "d813e974-d0ec-487d-baf3-4e77b012e949",
+            "src_view_id": "output0",
+            "dst_view_id": "input0",
+            "isGoto": false
+        },
+        "link101": {
+            "src_id": "d813e974-d0ec-487d-baf3-4e77b012e949",
+            "dst_id": "e4dbe298-6be2-41d0-9024-599a40f76a7c",
+            "src_view_id": "output0",
+            "dst_view_id": "input0",
+            "isGoto": false
+        },
+        "link102": {
+            "src_id": "e4dbe298-6be2-41d0-9024-599a40f76a7c",
+            "dst_id": "235fca08-8541-4295-af5d-422e1b1dbb67",
+            "src_view_id": "outputRows",
+            "dst_view_id": "input0",
+            "isGoto": false
+        },
+        "link103": {
+            "src_id": "235fca08-8541-4295-af5d-422e1b1dbb67",
+            "dst_id": "e1c36fe1-90c2-495c-91f4-beb532053e41",
+            "src_view_id": "output0",
+            "dst_view_id": "inputRows",
+            "isGoto": false
+        },
+        "link104": {
+            "src_id": "e1c36fe1-90c2-495c-91f4-beb532053e41",
+            "dst_id": "7a7ab1f3-362d-41f1-a7e2-aa4ad14074df",
+            "src_view_id": "output0",
+            "dst_view_id": "input0",
+            "isGoto": false
+        },
+        "link105": {
+            "src_id": "d813e974-d0ec-487d-baf3-4e77b012e949",
+            "dst_id": "7a7ab1f3-362d-41f1-a7e2-aa4ad14074df",
+            "src_view_id": "output1",
+            "dst_view_id": "input1",
+            "isGoto": true
+        },
+        "link106": {
+            "src_id": "7a7ab1f3-362d-41f1-a7e2-aa4ad14074df",
+            "dst_id": "f999041d-6cb6-4bd7-a785-090a375aa093",
+            "src_view_id": "output0",
+            "dst_view_id": "input0",
+            "isGoto": false
+        },
+        "link107": {
+            "src_id": "f999041d-6cb6-4bd7-a785-090a375aa093",
+            "dst_id": "ee435b2e-6549-47a0-b17d-3f1ee6567143",
+            "src_view_id": "output0",
+            "dst_view_id": "input0",
+            "isGoto": false
+        }
+    },
+    "render_map": {
+        "pan_x_num": 0,
+        "pan_y_num": 0,
+        "scale_ratio": 1,
+        "detail_map": {
+            "f471a072-357e-4f9f-a45c-4e6cc2f3b853": {
+                "grid_x_int": 2,
+                "input": {},
+                "output": {},
+                "index": null,
+                "recommendation_id": null,
+                "source": "snap catagory",
+                "grid_y_int": 2,
+                "errors": {},
+                "error": {},
+                "rot_int": 0,
+                "rot_tail_int": 0
+            },
+            "d813e974-d0ec-487d-baf3-4e77b012e949": {
+                "grid_x_int": 3,
+                "input": {},
+                "output": {
+                    "output1": {
+                        "rot_int": 0,
+                        "dx_int": 0,
+                        "dy_int": 1
+                    }
+                },
+                "index": null,
+                "recommendation_id": null,
+                "source": "snap catagory",
+                "grid_y_int": 2,
+                "errors": {},
+                "error": {},
+                "rot_int": 0,
+                "rot_tail_int": 0
+            },
+            "e4dbe298-6be2-41d0-9024-599a40f76a7c": {
+                "grid_x_int": 4,
+                "input": {},
+                "output": {},
+                "index": null,
+                "recommendation_id": null,
+                "source": "snap catagory",
+                "grid_y_int": 2,
+                "errors": {},
+                "error": {},
+                "rot_int": 0,
+                "rot_tail_int": 0
+            },
+            "235fca08-8541-4295-af5d-422e1b1dbb67": {
+                "grid_x_int": 5,
+                "input": {},
+                "output": {},
+                "index": null,
+                "recommendation_id": null,
+                "source": "snap catagory",
+                "grid_y_int": 2,
+                "errors": {},
+                "error": {},
+                "rot_int": 0,
+                "rot_tail_int": 0
+            },
+            "e1c36fe1-90c2-495c-91f4-beb532053e41": {
+                "grid_x_int": 6,
+                "input": {},
+                "output": {},
+                "index": null,
+                "recommendation_id": null,
+                "source": "snap catagory",
+                "grid_y_int": 2,
+                "errors": {},
+                "error": {},
+                "rot_int": 0,
+                "rot_tail_int": 0
+            },
+            "7a7ab1f3-362d-41f1-a7e2-aa4ad14074df": {
+                "grid_x_int": 7,
+                "input": {
+                    "input1": {
+                        "rot_int": 0,
+                        "dx_int": 0,
+                        "dy_int": 1
+                    }
+                },
+                "output": {},
+                "index": null,
+                "recommendation_id": null,
+                "source": "snap catagory",
+                "grid_y_int": 2,
+                "errors": {},
+                "error": {},
+                "rot_int": 0,
+                "rot_tail_int": 0
+            },
+            "f999041d-6cb6-4bd7-a785-090a375aa093": {
+                "grid_x_int": 8,
+                "input": {},
+                "output": {},
+                "index": null,
+                "recommendation_id": null,
+                "source": "snap catagory",
+                "grid_y_int": 2,
+                "errors": {},
+                "error": {},
+                "rot_int": 0,
+                "rot_tail_int": 0
+            },
+            "ee435b2e-6549-47a0-b17d-3f1ee6567143": {
+                "grid_x_int": 9,
+                "input": {},
+                "output": {},
+                "index": null,
+                "recommendation_id": null,
+                "source": "snap catagory",
+                "grid_y_int": 2,
+                "errors": {},
+                "error": {},
+                "rot_int": 0,
+                "rot_tail_int": 0
+            }
+        }
+    },
+    "class_fqid": "com-snaplogic-pipeline_9",
+    "class_id": "com-snaplogic-pipeline",
+    "class_version": 9,
+    "instance_version": 2
+}
