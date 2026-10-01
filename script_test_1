@@ -1,0 +1,37 @@
+from com.snaplogic.scripting.language import ScriptHook 
+from com.snaplogic.scripting.language.ScriptHook import * 
+import os 
+import subprocess 
+import java.util.HashMap 
+
+class TransformScript(ScriptHook): 
+
+    def __init__(self, input, output, error, log): 
+        self.input = input 
+        self.output = output 
+        self.error = error 
+        self.log = log 
+
+    def execute(self): 
+        self.log.info("Executing Transform script") 
+
+        try: 
+            while self.input.hasNext(): 
+                data = self.input.next() 
+                data["output"]=data["cmd"] 
+                proc = subprocess.Popen(data["output"],stdout=subprocess.PIPE,shell=True) 
+                #(out, err) = proc.communicate() 
+                map = java.util.HashMap() 
+                map.put("out", proc.stdout.read()) 
+                #map.put("err", err) 
+                map.put("command", data["output"]) 
+
+                self.output.write(map) 
+        
+        except Exception as e: 
+            data["error"]=e.message 
+            self.error.write(data) 
+
+        self.log.info("Finished executing the Transform script") 
+        
+hook = TransformScript(input, output, error, log)
