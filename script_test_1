@@ -1,37 +1,42 @@
-from com.snaplogic.scripting.language import ScriptHook 
-from com.snaplogic.scripting.language.ScriptHook import * 
-import os 
-import subprocess 
-import java.util.HashMap 
+from com.snaplogic.scripting.language import ScriptHook
+from com.snaplogic.scripting.language.ScriptHook import *
+from subprocess import Popen, PIPE
+import subprocess
 
-class TransformScript(ScriptHook): 
+class TransformScript(ScriptHook):
+    def __init__(self, input, output, error, log):
+        self.input = input
+        self.output = output
+        self.error = error
+        self.log = log
 
-    def __init__(self, input, output, error, log): 
-        self.input = input 
-        self.output = output 
-        self.error = error 
-        self.log = log 
+    def execute(self):
+        self.log.info("Executing Transform script")
 
-    def execute(self): 
-        self.log.info("Executing Transform script") 
+        while self.input.hasNext():
+            data = self.input.next()
+            cli = str(data['cmd'])
+            args = 'cmd.exe /C' + cli        
+        self.log.info("Executed  cmd")
 
-        try: 
-            while self.input.hasNext(): 
-                data = self.input.next() 
-                data["output"]=data["cmd"] 
-                proc = subprocess.Popen(data["output"],stdout=subprocess.PIPE,shell=True) 
-                #(out, err) = proc.communicate() 
-                map = java.util.HashMap() 
-                map.put("out", proc.stdout.read()) 
-                #map.put("err", err) 
-                map.put("command", data["output"]) 
 
-                self.output.write(map) 
+            proc = subprocess.Popen(args, stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+            out, err = proc.communicate()
+            exitcode = proc.returncode
+            
+        proc.kill()
         
-        except Exception as e: 
-            data["error"]=e.message 
-            self.error.write(data) 
-
-        self.log.info("Finished executing the Transform script") 
+        if exitcode == 0:
+          data['exit_code'] = exitcode
+          data['output'] = out
+          data['warning_message'] = err
+          self.output.write(data)
+        else:
+          data['exit_code'] = exitcode
+          data['output'] = out
+          data['error_message'] = err
+          self.error.write(data)        
         
+        self.log.info("Finished executing the Transform script")
+
 hook = TransformScript(input, output, error, log)
